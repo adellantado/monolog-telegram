@@ -1,0 +1,29 @@
+{
+  "name": "adellantado/monolog-telegram",
+  "description": "Logger that sends logs to @hefebot in Telegram",
+  "keywords": [
+    "Logger",
+    "HefeBot"
+  ],
+  "type": "library",
+  "require": {
+    "monolog/monolog": "~1"
+  },
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Tymchenko Oleksandr",
+      "email": "adellantado@gmail.com"
+    },
+    {
+      "name": "Svystun Yurii",
+      "email": "svystun@gmail.com"
+    }
+  ],
+  "minimum-stability": "dev",
+  "autoload": {
+    "psr-4": {
+      "HefeBot\\Logger\\": "src/"
+    }
+  }
+}
