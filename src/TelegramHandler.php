@@ -28,7 +28,6 @@ class TelegramHandler extends AbstractProcessingHandler
     {
         $this->appName = $appName;
         $this->token = $token;
-        $level = Logger::toMonologLevel($level);
 
         parent::__construct($level, true);
     }
@@ -36,20 +35,22 @@ class TelegramHandler extends AbstractProcessingHandler
     /**
      * @param array $record
      */
-    public function write(array $record)
+    public function write(array $record): void
     {
         try {
             $client = new Client([
-                'base_uri' => 'https://hefe.beedevs.com/api/log',
+                'base_uri' => 'https://hefe.beedevs.com/api/log/'.$this->token,
                 'timeout' => 2.0
             ]);
-            $client->post($this->token, [
+
+            $client->post('', [
                 RequestOptions::JSON => [
                     'message' => $record['formatted'],
-                    'log_level' => $record['level_name'],
+                    'log_level' => strtolower(Logger::getLevelName($record['level'])),
                     'app_id' => $this->appName,
                 ]
             ]);
+
         } catch (Exception $exception) {
 
         }
