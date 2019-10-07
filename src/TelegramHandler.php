@@ -3,9 +3,15 @@
 namespace HefeBot\Logger;
 
 use Exception;
+use GuzzleHttp\Client;
+use GuzzleHttp\RequestOptions;
 use Monolog\Logger;
 use Monolog\Handler\AbstractProcessingHandler;
 
+/**
+ * Class TelegramHandler
+ * @package HefeBot\Logger
+ */
 class TelegramHandler extends AbstractProcessingHandler
 {
     protected $appName;
@@ -14,13 +20,14 @@ class TelegramHandler extends AbstractProcessingHandler
 
     /**
      * TelegramHandler constructor.
-     * @param int $level
+     * @param $level
+     * @param $appName
+     * @param $token
      */
     public function __construct($level, $appName, $token)
     {
         $this->appName = $appName;
         $this->token = $token;
-        $level = Logger::toMonologLevel($level);
 
         parent::__construct($level, true);
     }
@@ -28,17 +35,22 @@ class TelegramHandler extends AbstractProcessingHandler
     /**
      * @param array $record
      */
-    public function write(array $record)
+    public function write(array $record): void
     {
         try {
-            file_get_contents(
-                'https://hefe.beedevs.com/' . $this->token
-                . http_build_query([
+            $client = new Client([
+                'base_uri' => 'https://hefe.beedevs.com/api/log/'.$this->token,
+                'timeout' => 2.0
+            ]);
+
+            $client->post('', [
+                RequestOptions::JSON => [
                     'message' => $record['formatted'],
-                    'level' => $record['level_name'],
-                    'name' => $this->appName
-                ])
-            );
+                    'log_level' => strtolower(Logger::getLevelName($record['level'])),
+                    'app_id' => $this->appName,
+                ]
+            ]);
+
         } catch (Exception $exception) {
 
         }
