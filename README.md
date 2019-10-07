@@ -9,6 +9,11 @@ Run
 
     composer require adellantado/monolog-telegram
 	
+	
+Important:
+   
+	The bot doesn't log lower than 'info' log level
+	
 <h2>Laravel Usage</h2>
 	
    Visit [@hefebot](https://t.me/hefebot) to receive token
