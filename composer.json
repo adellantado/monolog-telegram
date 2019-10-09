@@ -7,7 +7,7 @@
   ],
   "type": "library",
   "require": {
-    "monolog/monolog": "~2",
+    "monolog/monolog": ">1",
     "guzzlehttp/guzzle": "^6.3@dev"
   },
   "license": "MIT",
