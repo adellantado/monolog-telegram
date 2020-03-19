@@ -37,13 +37,37 @@ class TelegramHandler extends AbstractProcessingHandler
      */
     public function write(array $record): void
     {
+        $lvlNumber = $record['level'];
+        if (function_exists('cache') && function_exists('now')) {
+            $lvl = cache('_hefe_log_level');
+            if (!$lvl) {
+                $r = $this->send($record);
+                if (is_array($r) && array_key_exists('minLevel', $r)) {
+                    cache(['_hefe_log_level' => $r['minLevel']], now()->addDays(1));
+                }
+                return;
+            }
+
+            if ($lvlNumber >= $lvl) {
+                $this->send($record);
+            }
+
+        } else {
+            if ($lvlNumber >= Logger::ERROR) {
+                $this->send($record);
+            }
+        }
+    }
+
+    protected function send(array $record){
         try {
+
             $client = new Client([
                 'base_uri' => 'https://hefe.beedevs.com/api/log/'.$this->token,
                 'timeout' => 2.0
             ]);
 
-            $client->post('', [
+           $r = $client->post('', [
                 RequestOptions::JSON => [
                     'message' => $record['formatted'],
                     'log_level' => strtolower(Logger::getLevelName($record['level'])),
@@ -51,8 +75,11 @@ class TelegramHandler extends AbstractProcessingHandler
                 ]
             ]);
 
-        } catch (Exception $exception) {
+            return json_decode((string)$r->getBody(), true);
 
+        } catch (Exception $exception) {
+            return null;
         }
+
     }
 }
